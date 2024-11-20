@@ -84,7 +84,6 @@ export default function PetProfileScreen() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             {!isEditing ? (
-                // Просмотр профиля
                 <View>
                     <Text style={styles.profileField}>
                         <Text style={styles.label}>Кличка: </Text>
