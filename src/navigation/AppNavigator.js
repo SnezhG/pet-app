@@ -7,11 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import PetProfileScreen from "../screens/pet/PetProfile";
 import PetAddScreen from '../screens/pet/PetAdd';
-import ActivityListScreen from "../screens/activity/ActivitysList";
-import ActivityScreen from "../screens/activity/ActivityFormView";
-import EventListScreen from "../screens/event/EventsList";
-import EventsByDateScreen from "../screens/event/EventsByDay";
-import EventScreen from "../screens/event/EventFormView";
+import EventListScreen from "../screens/pet-event/PetEventsList";
+import EventsByDateScreen from "../screens/pet-event/PetEventsByDay";
+import EventScreen from "../screens/pet-event/PetEventFormView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -48,7 +46,6 @@ const TabNavigator = () => {
             })}
         >
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Activity" component={ActivityListScreen} />
             <Tab.Screen name="Event" component={EventListScreen} />
         </Tab.Navigator>
     );
@@ -78,7 +75,6 @@ const AppNavigator = () => {
                 <Stack.Screen name="PetAdd" component={PetAddScreen} />
                 <Stack.Screen name="PetProfile" component={PetProfileScreen} />
                 <Stack.Screen name="EventsByDay" component={EventsByDateScreen} />
-                <Stack.Screen name="ActivityFormView" component={ActivityScreen} />
                 <Stack.Screen name="EventFormView" component={EventScreen} />
             </Stack.Navigator>
         </NavigationContainer>

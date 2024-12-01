@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image } from 'react-native';
-
-const pets = [
-    { id: '1', name: 'Buddy', image: 'https://cataas.com/cat' },
-    { id: '2', name: 'Luna', image: 'https://cataas.com/cat' },
-    { id: '3', name: 'Charlie', image: 'https://cataas.com/cat' },
-];
+import {fetchPetsByUserId, fetchPetById} from "../queries/pet/petQueries";
 
 export default function HomeScreen({ navigation }) {
-    const [petProfiles, setPetProfiles] = useState(pets);
+    const [pets, setPets] = useState([]);
+
+    useEffect(() => {
+        const userId = '1';
+
+        fetchPetsByUserId(userId)
+            .then((data) => {
+                setPets(data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setLoading(false);
+            });
+    }, []);
+
 
     const renderItem = ({ item }) => (
         <View style={styles.card}>
-            <TouchableOpacity onPress={() => navigation.navigate('PetProfile')}>
+            <TouchableOpacity onPress={() => navigation.navigate('PetProfile', { petId: item.id })}>
                 <Image source={{ uri: item.image }} style={styles.image} />
                 <Text style={styles.name}>{item.name}</Text>
             </TouchableOpacity>
@@ -30,7 +40,7 @@ export default function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <FlatList
-                data={[...petProfiles, { id: 'add', name: '', image: '' }]}
+                data={[...pets, { id: 'add', name: '', image: '' }]}
                 renderItem={({ item }) => (item.id === 'add' ? addNewPetButton() : renderItem({ item }))}
                 keyExtractor={(item) => item.id}
                 horizontal
