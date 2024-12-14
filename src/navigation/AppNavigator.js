@@ -5,11 +5,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../screens/HomeScreen';
-import PetProfileScreen from "../screens/pet/PetProfile";
-import PetAddScreen from '../screens/pet/PetAdd';
-import EventListScreen from "../screens/pet-event/PetEventsList";
-import EventsByDateScreen from "../screens/pet-event/PetEventsByDay";
-import EventScreen from "../screens/pet-event/PetEventFormView";
+import PetProfileScreen from "../screens/pet/PetProfileScreen";
+
+import PetEventCreateScreen from "../screens/pet-event/PetEventCreateScreen";
+import PetEventsListScreen from "../screens/pet-event/PetEventsListScreen";
+import PetEventEditFormScreen from "../screens/pet-event/PetEventEditFormScreen";
+import PetEventsByDayScreen from "../screens/pet-event/PetEventsByDayScreen";
+import PetEventViewScreen from "../screens/pet-event/PetEventViewScreen";
+
+import PetClinicMapScreen from "../screens/map/PetClinicMapScreen";
+import PetCreateScreen from "../screens/pet/PetCreateScreen";
+import PetEditFormScreen from "../screens/pet/PetEditFormScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -22,11 +28,11 @@ const TabNavigator = () => {
                     let iconName;
 
                     if (route.name === 'Home') {
-                        iconName = focused ? 'home' : 'home-outline';
-                    } else if (route.name === 'Activity') {
                         iconName = focused ? 'paw' : 'paw-outline';
                     } else if (route.name === 'Event') {
                         iconName = focused ? 'calendar' : 'calendar-outline';
+                    } else if (route.name === 'PetMap') {
+                        iconName = focused ? 'map' : 'map-outline';
                     }
 
                     return <Ionicons name={iconName} size={size} color={color} />;
@@ -46,7 +52,8 @@ const TabNavigator = () => {
             })}
         >
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Event" component={EventListScreen} />
+            <Tab.Screen name="Event" component={PetEventsListScreen} />
+            <Tab.Screen name="PetMap" component={PetClinicMapScreen} />
         </Tab.Navigator>
     );
 };
@@ -72,10 +79,15 @@ const AppNavigator = () => {
                     component={TabNavigator}
                     options={{ headerShown: false }}
                 />
-                <Stack.Screen name="PetAdd" component={PetAddScreen} />
                 <Stack.Screen name="PetProfile" component={PetProfileScreen} />
-                <Stack.Screen name="EventsByDay" component={EventsByDateScreen} />
-                <Stack.Screen name="EventFormView" component={EventScreen} />
+                <Stack.Screen name="PetCreate" component={PetCreateScreen} />
+                <Stack.Screen name="PetEdit" component={PetEditFormScreen} />
+
+                <Stack.Screen name="Events" component={PetEventsListScreen} />
+                <Stack.Screen name="EventCreate" component={PetEventCreateScreen} />
+                <Stack.Screen name="EventEdit" component={PetEventEditFormScreen} />
+                <Stack.Screen name="EventsByDay" component={PetEventsByDayScreen} />
+                <Stack.Screen name="EventView" component={PetEventViewScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
