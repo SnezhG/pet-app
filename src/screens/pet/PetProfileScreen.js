@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import PetEditForm from "./PetEditForm";
+import PetEditFormScreen from "./PetEditFormScreen";
 import { fetchPetById } from "../../queries/pet/petQueries";
 
 export default function PetProfileScreen({ route }) {
@@ -97,7 +97,7 @@ export default function PetProfileScreen({ route }) {
                     </TouchableOpacity>
                 </View>
             ) : (
-                <PetEditForm initialPet={pet} onSave={handleSave} />
+                <PetEditFormScreen initialPet={pet} onSave={handleSave} />
             )}
         </ScrollView>
     );

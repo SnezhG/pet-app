@@ -1,6 +1,7 @@
-const baseUrl = 'http://192.168.1.106:8090/api/pet/';
-const byUserUrlPart = 'by-user/'
-const updateUrlPart = 'edit';
+const baseUrl = 'http://192.168.1.106:8090/api/pet';
+const byUserUrlPart = '/by-user/'
+const updateUrlPart = '/update';
+const createUrlPart = '/create';
 
 export async function fetchPetsByUserId(userId) {
 
@@ -27,7 +28,7 @@ export async function fetchPetsByUserId(userId) {
 }
 
 export async function fetchPetById(id) {
-    const url = baseUrl + id;
+    const url = baseUrl + "/" + id;
 
     try {
         const response = await fetch(url, {
@@ -69,6 +70,53 @@ export async function updatePet(petDTO) {
         return await response.json();
     } catch (error) {
         console.error(`Ошибка при обновлении питомца:`, error);
+        throw error;
+    }
+}
+
+export async function createPet(petDTO) {
+    const url = baseUrl + createUrlPart;
+    console.log("petDTO", petDTO)
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(petDTO),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error(`Ошибка при создании питомца:`, error);
+        throw error;
+    }
+}
+
+export async function deletePet(id) {
+
+    const url = baseUrl + id;
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Ошибка при питомца с id ${id}:`, error);
         throw error;
     }
 }

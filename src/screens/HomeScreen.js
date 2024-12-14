@@ -1,23 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image } from 'react-native';
 import {fetchPetsByUserId, fetchPetById} from "../queries/pet/petQueries";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function HomeScreen({ navigation }) {
     const [pets, setPets] = useState([]);
 
-    useEffect(() => {
-        const userId = '1';
+    useFocusEffect(
+        useCallback(() => {
+            const userId = '1';
 
-        fetchPetsByUserId(userId)
-            .then((data) => {
-                setPets(data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
-    }, []);
+            fetchPetsByUserId(userId)
+                .then((data) => {
+                    setPets(data);
+                })
+
+            // Cleanup function (optional)
+            return () => {
+                setPets([]);
+            };
+        }, [])
+    );
 
 
     const renderItem = ({ item }) => (
@@ -32,7 +35,7 @@ export default function HomeScreen({ navigation }) {
     const addNewPetButton = () => (
         <TouchableOpacity
             style={[styles.card, styles.addButton]}
-            onPress={() => navigation.navigate('PetAdd')}>
+            onPress={() => navigation.navigate('PetCreate', {navigation: navigation})}>
             <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
     );

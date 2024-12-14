@@ -14,7 +14,7 @@ import { format, parse } from 'date-fns';
 import { fetchAllSpecies, fetchAllBreedsBySpecies, fetchAllSexes } from "../../queries/dictionary/dictionaryQueries";
 import { updatePet } from "../../queries/pet/petQueries";
 
-export default function PetEditForm({ initialPet, onSave }) {
+export default function PetEditFormScreen({ initialPet, onSave }) {
     const [birthDate, setBirthDate] = useState(
         initialPet.birthDate
             ? parse(initialPet.birthDate, 'dd.MM.yyyy', new Date())
