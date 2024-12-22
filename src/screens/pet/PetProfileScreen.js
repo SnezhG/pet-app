@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
 import PetEditFormScreen from "./PetEditFormScreen";
 import { fetchPetById } from "../../queries/pet/petQueries";
 
@@ -15,7 +15,10 @@ export default function PetProfileScreen({ route }) {
         if (petId) {
             fetchPetById(petId)
                 .then((data) => {
-                    setPet(data);
+                    setPet({
+                        ...data,
+                        image: data.photo ? `data:image/jpeg;base64,${data.photo}` : null,
+                    });
                     setIsLoading(false);
                 })
                 .catch((err) => {
@@ -26,7 +29,7 @@ export default function PetProfileScreen({ route }) {
             setError('ID питомца не указан');
             setIsLoading(false);
         }
-    }, [petId,isEditing]);
+    }, [petId, isEditing]);
 
     const handleSave = () => {
         setIsEditing(false);
@@ -61,6 +64,13 @@ export default function PetProfileScreen({ route }) {
         <ScrollView contentContainerStyle={styles.container}>
             {!isEditing ? (
                 <View>
+                    {pet.image ? (
+                        <Image source={{ uri: pet.image }} style={styles.image} />
+                    ) : (
+                        <View style={[styles.image, styles.placeholder]}>
+                            <Text style={styles.placeholderText}>Фото отсутствует</Text>
+                        </View>
+                    )}
                     <Text style={styles.profileField}>
                         <Text style={styles.label}>Кличка: </Text>
                         {pet.name}
@@ -107,6 +117,22 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#fff',
+    },
+    image: {
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        alignSelf: 'center',
+        marginBottom: 20,
+        backgroundColor: '#e0e0e0',
+    },
+    placeholder: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    placeholderText: {
+        color: '#888',
+        fontSize: 14,
     },
     profileField: {
         fontSize: 16,

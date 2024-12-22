@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
+    Image,
     TextInput,
     TouchableOpacity,
     ActivityIndicator,
@@ -13,6 +14,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { format, parse } from 'date-fns';
 import { fetchAllSpecies, fetchAllBreedsBySpecies, fetchAllSexes } from "../../queries/dictionary/dictionaryQueries";
 import { updatePet } from "../../queries/pet/petQueries";
+import * as ImagePicker from "expo-image-picker";
 
 export default function PetEditFormScreen({ initialPet, onSave }) {
     const [birthDate, setBirthDate] = useState(
@@ -26,6 +28,8 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
             ? format(parse(initialPet.birthDate, 'dd.MM.yyyy', new Date()), 'dd.MM.yyyy')
             : ''
     );
+    const [photo, setPhoto] = useState(initialPet.photo || null);
+    const [photoUri, setPhotoUri] = useState(initialPet.photo ? `data:image/jpeg;base64,${initialPet.photo}` : null)
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [speciesOptions, setSpeciesOptions] = useState([]);
     const [breedOptions, setBreedOptions] = useState([]);
@@ -137,7 +141,7 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
                 sex: { id: values.sex },
                 breed: { id: values.breed },
                 birthDate: format(birthDate, 'dd.MM.yyyy'),
-                photo: null
+                photo: photo ? photo : null
             };
             const response = await updatePet(updatedPet);
             onSave(); // Обновление данных в родительском компоненте
@@ -146,6 +150,24 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
         }
     };
 
+    const handlePhotoPick = async () => {
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+            alert('Разрешение на доступ к галерее необходимо!');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+        });
+
+        if (!result.canceled) {
+            setPhoto(result.assets[0].base64);
+            setPhotoUri(result.assets[0].uri);
+        }
+    };
     return (
         <Formik
             initialValues={{
@@ -169,6 +191,16 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
                         placeholder="Введите кличку"
                     />
                     {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
+
+                    <Text style={styles.label}>Фото</Text>
+                    {photo ? (
+                        <Image source={{ uri: photoUri }} style={styles.photoPreview} />
+                    ) : (
+                        <Text style={styles.photoPlaceholder}>Фото отсутствует</Text>
+                    )}
+                    <TouchableOpacity style={styles.photoButton} onPress={handlePhotoPick}>
+                        <Text style={styles.photoButtonText}>Выбрать фото</Text>
+                    </TouchableOpacity>
 
                     <Text style={styles.label}>Вид</Text>
                     {isLoadingSpecies ? (
@@ -322,6 +354,28 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red',
         marginBottom: 10,
+    },
+    photoPreview: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    photoPlaceholder: {
+        fontSize: 14,
+        color: '#888',
+        marginBottom: 10,
+    },
+    photoButton: {
+        backgroundColor: '#4CAF50',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    photoButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
 

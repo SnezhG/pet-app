@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image } from 'react-native';
-import {fetchPetsByUserId, fetchPetById} from "../queries/pet/petQueries";
-import {useFocusEffect} from "@react-navigation/native";
+import { fetchPetsByUserId } from "../queries/pet/petQueries";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen({ navigation }) {
     const [pets, setPets] = useState([]);
@@ -12,21 +12,31 @@ export default function HomeScreen({ navigation }) {
 
             fetchPetsByUserId(userId)
                 .then((data) => {
-                    setPets(data);
+                    const updatedPets = data.map(pet => ({
+                        ...pet,
+                        image: pet.photo ? `data:image/jpeg;base64,${pet.photo}` : null,
+                    }));
+                    setPets(updatedPets);
                 })
+                .catch((error) => console.error('Error fetching pets:', error));
 
-            // Cleanup function (optional)
+            // Cleanup function
             return () => {
                 setPets([]);
             };
         }, [])
     );
 
-
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <TouchableOpacity onPress={() => navigation.navigate('PetProfile', { petId: item.id })}>
-                <Image source={{ uri: item.image }} style={styles.image} />
+                {item.image ? (
+                    <Image source={{ uri: item.image }} style={styles.image} />
+                ) : (
+                    <View style={[styles.image, styles.placeholder]}>
+                        <Text style={styles.placeholderText}>Фото</Text>
+                    </View>
+                )}
                 <Text style={styles.name}>{item.name}</Text>
             </TouchableOpacity>
         </View>
@@ -35,11 +45,12 @@ export default function HomeScreen({ navigation }) {
     const addNewPetButton = () => (
         <TouchableOpacity
             style={[styles.card, styles.addButton]}
-            onPress={() => navigation.navigate('PetCreate', {navigation: navigation})}>
+            onPress={() => navigation.navigate('PetCreate', { navigation: navigation })}
+        >
             <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
     );
-    
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -82,6 +93,15 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         marginBottom: 10,
+    },
+    placeholder: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e0e0e0',
+    },
+    placeholderText: {
+        color: '#888',
+        fontSize: 14,
     },
     name: {
         fontSize: 16,

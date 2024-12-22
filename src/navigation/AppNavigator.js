@@ -51,6 +51,7 @@ const TabNavigator = () => {
                 headerTitle: 'Pet-App',
             })}
         >
+
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Event" component={PetEventsListScreen} />
             <Tab.Screen name="PetMap" component={PetClinicMapScreen} />
@@ -83,7 +84,6 @@ const AppNavigator = () => {
                 <Stack.Screen name="PetCreate" component={PetCreateScreen} />
                 <Stack.Screen name="PetEdit" component={PetEditFormScreen} />
 
-                <Stack.Screen name="Events" component={PetEventsListScreen} />
                 <Stack.Screen name="EventCreate" component={PetEventCreateScreen} />
                 <Stack.Screen name="EventEdit" component={PetEventEditFormScreen} />
                 <Stack.Screen name="EventsByDay" component={PetEventsByDayScreen} />

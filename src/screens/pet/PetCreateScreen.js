@@ -6,29 +6,28 @@ import {
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import { format } from 'date-fns';
+import * as ImagePicker from 'expo-image-picker';
 import { fetchAllSpecies, fetchAllBreedsBySpecies, fetchAllSexes } from "../../queries/dictionary/dictionaryQueries";
-import {createPet} from "../../queries/pet/petQueries";
+import { createPet } from "../../queries/pet/petQueries";
 
-function PetCreateScreen({navigation}) {
+function PetCreateScreen({ navigation }) {
     const [birthDate, setBirthDate] = useState(new Date());
     const [formattedDate, setFormattedDate] = useState('');
-
     const [showDatePicker, setShowDatePicker] = useState(false);
-
     const [species, setSpeciesOptions] = useState([]);
     const [isLoadingSpecies, setIsLoadingSpecies] = useState(true);
-
     const [breedOptions, setBreedOptions] = useState([]);
     const [isLoadingBreeds, setIsLoadingBreeds] = useState(false);
-
     const [sexOptions, setSexOptions] = useState([]);
     const [isLoadingSexes, setIsLoadingSexes] = useState(false);
+    const [photo, setPhoto] = useState(null);
 
     useEffect(() => {
         fetchAllSpecies()
@@ -62,7 +61,7 @@ function PetCreateScreen({navigation}) {
 
     const handleSpeciesChange = (speciesId, setFieldValue) => {
         setFieldValue('species', speciesId);
-        setFieldValue('breed', null); // Сбрасываем породу при изменении вида
+        setFieldValue('breed', null);
         setIsLoadingBreeds(true);
 
         fetchAllBreedsBySpecies(speciesId)
@@ -88,6 +87,26 @@ function PetCreateScreen({navigation}) {
         }
     };
 
+    const handlePickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            alert('Необходимо разрешение на доступ к галерее.');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+            base64: true,
+        });
+
+        if (!result.canceled) {
+            setPhoto(result.assets[0]);
+        }
+    };
+
     const handleFormSubmit = async (values) => {
         try {
             const newPet = {
@@ -96,11 +115,12 @@ function PetCreateScreen({navigation}) {
                 sex: { id: values.sex },
                 breed: { id: values.breed },
                 birthDate: format(birthDate, 'dd.MM.yyyy'),
-                photo: null,
-                user: { id: "1" }
+                photo: photo ? photo.base64 : null,
+                user: { id: "1" },
             };
+
             const response = await createPet(newPet);
-            navigation.navigate('PetProfile', { petId: response })
+            navigation.navigate('PetProfile', { petId: response });
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
@@ -226,6 +246,17 @@ function PetCreateScreen({navigation}) {
                             <Text style={styles.error}>{errors.health}</Text>
                         )}
 
+                        <Text style={styles.label}>Фото</Text>
+                        <TouchableOpacity style={styles.photoButton} onPress={handlePickImage}>
+                            <Text style={styles.photoButtonText}>Выбрать фото</Text>
+                        </TouchableOpacity>
+                        {photo && (
+                            <Image
+                                source={{ uri: photo.uri }}
+                                style={styles.photoPreview}
+                            />
+                        )}
+
                         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                             <Text style={styles.submitButtonText}>Добавить питомца</Text>
                         </TouchableOpacity>
@@ -279,6 +310,23 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red',
         marginBottom: 10,
+    },
+    photoButton: {
+        backgroundColor: '#2196F3',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    photoButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    photoPreview: {
+        width: 100,
+        height: 100,
+        borderRadius: 5,
+        marginBottom: 15,
     },
 });
 
