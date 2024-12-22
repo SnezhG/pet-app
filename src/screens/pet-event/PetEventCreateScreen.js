@@ -8,8 +8,10 @@ import {fetchPetsByUserId} from "../../queries/pet/petQueries";
 import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries";
 import {format} from "date-fns";
 import {createPetEvent} from "../../queries/pet-event/petEventQueries";
+import {useNavigation} from "@react-navigation/native";
 
 const PetEventCreateScreen = () => {
+    const navigation = useNavigation();
     const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
     const [formattedDate, setFormattedDate] = useState('');
 
@@ -44,14 +46,18 @@ const PetEventCreateScreen = () => {
         }
     };
 
-    const handleFormSubmit = async (values) => {
+    const handleSubmit = async (values) => {
+        console.log("CREATE PET EVENT", values)
         try {
             const newPetEvent = {
                 ...values,
+                pet: { id: values.pet },
+                user: { id: 1 },
                 type: { id: values.type },
                 date: format(currentSelectedDate, 'dd.MM.yyyy')
             };
             const response = await createPetEvent(newPetEvent);
+            navigation.navigate('MainTabs', {screen: 'Event'});
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
@@ -63,10 +69,10 @@ const PetEventCreateScreen = () => {
         description: '',
     };
 
-    const validationSchema = Yup.object({
+    const validationSchema = Yup.object().shape({
         type: Yup.string().required('Тип события обязателен'),
         pet: Yup.string().required('Питомец обязателен'),
-        description: Yup.string().required('Описание обязательно').max(255, 'Максимум 255 символов'),
+        description: Yup.string().required('Описание обязательно'),
         date: Yup.date().required('Дата обязательна').nullable(),
     });
 
@@ -74,8 +80,7 @@ const PetEventCreateScreen = () => {
         <View style={styles.container}>
             <Formik
                 initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleFormSubmit}
+                onSubmit={handleSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
                     <>
@@ -91,7 +96,7 @@ const PetEventCreateScreen = () => {
                         <Text style={styles.label}>Питомец</Text>
                         <RNPickerSelect
                             onValueChange={(value) => setFieldValue('pet', value)}
-                            items={pets}
+                            items={userPets}
                             style={pickerSelectStyles}
                             value={values.pet}
                         />
@@ -127,7 +132,7 @@ const PetEventCreateScreen = () => {
                                 onChange={handleDateChange}
                             />
                         )}
-
+                        {errors.type && <Text style={styles.error}>{errors.type}</Text>}
                         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
                             <Text style={styles.submitButtonText}>Сохранить</Text>
                         </TouchableOpacity>

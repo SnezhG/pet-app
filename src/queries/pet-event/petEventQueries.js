@@ -125,7 +125,7 @@ export async function createPetEvent(petEventDTO) {
 }
 
 export async function updatePetEvent(petEventDTO) {
-    const url = baseUrl + updatePetEvent();
+    const url = baseUrl + updateUrlPart;
     console.log("petEventDTO", petEventDTO)
     try {
         const response = await fetch(url, {

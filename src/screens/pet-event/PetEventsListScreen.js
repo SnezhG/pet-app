@@ -84,6 +84,13 @@ const PetEventsListScreen = () => {
                 />
             )}
 
+            <TouchableOpacity
+                style={styles.addEventButton}
+                onPress={() => navigation.navigate('EventCreate')} // Переход на экран EventCreate
+            >
+                <Text style={styles.addEventButtonText}>Добавить событие</Text>
+            </TouchableOpacity>
+
             <Text style={styles.sectionTitle}>События на неделю</Text>
             <FlatList
                 data={weekEvents}
@@ -142,6 +149,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#999',
         marginTop: 20,
+    },
+    addEventButton: {
+        marginVertical: 10,
+        padding: 15,
+        backgroundColor: '#4CAF50',
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    addEventButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });
 

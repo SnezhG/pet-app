@@ -9,9 +9,11 @@ import {fetchPetEventById, updatePetEvent} from "../../queries/pet-event/petEven
 import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries";
 import {fetchPetsByUserId, updatePet} from "../../queries/pet/petQueries";
 import {format, parse} from "date-fns";
+import {useNavigation} from "@react-navigation/native";
 
 const PetEventEditFormScreen = ({ route }) => {
     const { eventId } = route.params;
+    const navigation = useNavigation();
     const [initialPetEvent, setInitialPetEvent] = useState(null);
     const [pets,setPets] = useState(null);
     const [eventTypes, setEventTypes] = useState(null);
@@ -65,22 +67,24 @@ const PetEventEditFormScreen = ({ route }) => {
             const updatedPetEvent = {
                 ...values,
                 id: eventId,
+                pet: { id: values.pet },
                 type: { id: values.type },
                 date: format(currentSelectedDate, 'dd.MM.yyyy')
             };
             console.log(updatedPetEvent)
             const response = await updatePetEvent(updatedPetEvent);
+            navigation.navigate('Event');
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
     };
 
-    const validationSchema = Yup.object({
-        type: Yup.string().required('Тип события обязателен'),
-        pet: Yup.string().required('Питомец обязателен'),
-        description: Yup.string().required('Описание обязательно').max(255, 'Максимум 255 символов'),
-        date: Yup.date().required('Дата обязательна').nullable(),
-    });
+    // const validationSchema = Yup.object().shape({
+    //     type: Yup.string().required('Тип события обязателен'),
+    //     pet: Yup.string().required('Питомец обязателен'),
+    //     description: Yup.string().required('Описание обязательно').max(255, 'Максимум 255 символов'),
+    //     date: Yup.date().required('Дата обязательна').nullable(),
+    // });
 
     if (!initialPetEvent || !pets || !eventTypes) {
         return (
@@ -98,7 +102,6 @@ const PetEventEditFormScreen = ({ route }) => {
                     pet: initialPetEvent?.pet.id || '',
                     description: initialPetEvent?.description || '',
                 }}
-                validationSchema={validationSchema}
                 onSubmit={handleFormSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
@@ -154,7 +157,7 @@ const PetEventEditFormScreen = ({ route }) => {
                             />
                         )}
 
-                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} >
                             <Text style={styles.submitButtonText}>Сохранить изменения</Text>
                         </TouchableOpacity>
                     </>
