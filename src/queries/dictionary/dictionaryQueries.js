@@ -1,3 +1,5 @@
+import {getToken} from "../../auth/auth";
+
 const baseUrl = 'http://192.168.1.106:8090/api/dictionary';
 const allSpeciesUrlPart = '/all-species'
 const allBreedsBySpeciesUrlPart = "/all-breeds-by-species/";
@@ -8,10 +10,12 @@ export async function fetchAllSpecies() {
     const url = baseUrl + allSpeciesUrlPart;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -31,10 +35,12 @@ export async function fetchAllBreedsBySpecies(speciesId) {
     const url = baseUrl + allBreedsBySpeciesUrlPart + speciesId;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -54,10 +60,12 @@ export async function fetchAllPetEventTypes() {
     const url = baseUrl + allPetEventTypesUrlPart;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -77,10 +85,12 @@ export async function fetchAllSexes() {
     const url = baseUrl + allSexesUrlPart;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 

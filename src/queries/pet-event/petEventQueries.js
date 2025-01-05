@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {getToken} from "../../auth/auth";
 
 const baseUrl = 'http://192.168.1.106:8090/api/event';
 const byUserWeekUrlPart = '/by-user-week';
@@ -6,10 +6,6 @@ const byUserAllUrlPart = '/by-user-all';
 const byDateAndUserUrlPart = "/by-date/"
 const createUrlPart = "/create";
 const updateUrlPart = "/update";
-
-async function getToken() {
-    return await AsyncStorage.getItem('jwtToken');
-}
 
 export async function fetchPetEventById(id) {
 
