@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView} from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import RNPickerSelect from 'react-native-picker-select';
@@ -9,16 +9,21 @@ import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries"
 import {format} from "date-fns";
 import {createPetEvent} from "../../queries/pet-event/petEventQueries";
 import {useNavigation} from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
 
-const PetEventCreateScreen = () => {
-    const navigation = useNavigation();
+const PetEventCreateScreen = ({navigation}) => {
     const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
     const [formattedDate, setFormattedDate] = useState('');
 
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
 
     const [userPets,setUserPets] = useState([]);
     const [eventTypes, setEventTypes] = useState([]);
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [isNotifEnabled, setIsNotifEnabled] = useState(false);
+
 
     useEffect(() => {
         fetchPetsByUserId(1).then((data) => {
@@ -36,13 +41,28 @@ const PetEventCreateScreen = () => {
             }));
             setEventTypes(petEvents);
         })
-    }, [])
+
+        registerForPushNotificationsAsync().then(token => {
+            if (token) {
+                setExpoPushToken(token);
+                console.log('Expo Push Token:', token);
+            }
+        });
+    }, []);
 
     const handleDateChange = (event, selectedDate) => {
         setShowDatePicker(false);
         if (selectedDate) {
             setCurrentSelectedDate(selectedDate);
-            setFormattedDate(format(selectedDate, 'dd.MM.yyyy'));
+            setFormattedDate(format(selectedDate, 'dd.MM.yyyy HH:mm:ss'));
+        }
+    };
+
+    const handleTimeChange = (event, selectedTime) => {
+        setShowTimePicker(false);
+        if (selectedTime) {
+            setCurrentSelectedDate(new Date(currentSelectedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes())));
+            setFormattedDate(format(currentSelectedDate, 'dd.MM.yyyy HH:mm:ss'));
         }
     };
 
@@ -54,10 +74,12 @@ const PetEventCreateScreen = () => {
                 pet: { id: values.pet },
                 user: { id: 1 },
                 type: { id: values.type },
-                date: format(currentSelectedDate, 'dd.MM.yyyy')
+                date: format(currentSelectedDate, 'dd.MM.yyyy HH:mm:ss'),
+                expoPushToken: expoPushToken, // Добавляем token
+                isNotifEnabled: isNotifEnabled,
             };
             const response = await createPetEvent(newPetEvent);
-            navigation.navigate('MainTabs', {screen: 'Event'});
+            navigation.replace('MainTabs', {screen: 'Event'});
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
@@ -76,8 +98,18 @@ const PetEventCreateScreen = () => {
         date: Yup.date().required('Дата обязательна').nullable(),
     });
 
+    const registerForPushNotificationsAsync = async () => {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Не удалось получить разрешение на уведомления!');
+            return;
+        }
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        return token;
+    };
+
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
@@ -133,18 +165,38 @@ const PetEventCreateScreen = () => {
                             />
                         )}
                         {errors.type && <Text style={styles.error}>{errors.type}</Text>}
+
+                        {showTimePicker && (
+                            <DateTimePicker
+                                value={currentSelectedDate}
+                                mode="time"
+                                display="default"
+                                onChange={handleTimeChange}
+                            />
+                        )}
+
+                            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.selectTimeButton}>
+                                <Text style={styles.selectTimeButtonText}>Выбрать время</Text>
+                            </TouchableOpacity>
+
+                        <Text style={styles.label}>Включить уведомления</Text>
+                        <Switch
+                            value={isNotifEnabled}
+                            onValueChange={(value) => setIsNotifEnabled(value)}
+                        />
                         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
                             <Text style={styles.submitButtonText}>Сохранить</Text>
                         </TouchableOpacity>
                     </>
                 )}
             </Formik>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 20,
         backgroundColor: '#fff',
     },
@@ -184,6 +236,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red',
         marginBottom: 10,
+    },
+    selectTimeButton: {
+        backgroundColor: '#4CAF50',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 15,
+    },
+    selectTimeButtonText: {
+        color: '#fff',
     },
 });
 

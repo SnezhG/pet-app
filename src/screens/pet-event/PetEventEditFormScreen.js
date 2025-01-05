@@ -1,36 +1,33 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView} from 'react-native';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-import {fetchPetEventById, updatePetEvent} from "../../queries/pet-event/petEventQueries";
+import { fetchPetEventById, updatePetEvent } from "../../queries/pet-event/petEventQueries";
+import { fetchPetsByUserId } from "../../queries/pet/petQueries";
+import { format, parse } from "date-fns";
+import { useNavigation } from "@react-navigation/native";
 import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries";
-import {fetchPetsByUserId, updatePet} from "../../queries/pet/petQueries";
-import {format, parse} from "date-fns";
-import {useNavigation} from "@react-navigation/native";
 
-const PetEventEditFormScreen = ({ route }) => {
+const PetEventEditFormScreen = ({ route, navigation }) => {
     const { eventId } = route.params;
-    const navigation = useNavigation();
     const [initialPetEvent, setInitialPetEvent] = useState(null);
-    const [pets,setPets] = useState(null);
+    const [pets, setPets] = useState(null);
     const [eventTypes, setEventTypes] = useState(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [currentSelectedDate,setCurrentSelectedDate] = useState(null);
-    const [formattedDate, setFormattedDate] = useState(null);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
+    const [formattedDate, setFormattedDate] = useState('');
 
     useEffect(() => {
         fetchPetEventById(eventId).then((data) => {
-            console.log(data)
             setInitialPetEvent(data);
-            setCurrentSelectedDate(data.date ? parse(data.date, 'dd.MM.yyyy', new Date()) : new Date())
-            setFormattedDate(data.date ? format(parse(data.date, 'dd.MM.yyyy', new Date()), 'dd.MM.yyyy')
-                : '')
+            const parsedDate = data.date ? parse(data.date, 'dd.MM.yyyy HH:mm:ss', new Date()) : new Date();
+            setCurrentSelectedDate(parsedDate);
+            setFormattedDate(data.date ? format(parsedDate, 'dd.MM.yyyy HH:mm:ss') : '');
         }).catch((error) => {
-            console.error('Ошибка при загрузке питомца:', error);
-        })
+            console.error('Ошибка при загрузке данных события:', error);
+        });
 
         fetchPetsByUserId(1).then((data) => {
             const petList = data.map((pet) => ({
@@ -40,7 +37,7 @@ const PetEventEditFormScreen = ({ route }) => {
             setPets(petList);
         }).catch((error) => {
             console.error('Ошибка при загрузке питомцев пользователя:', error);
-        })
+        });
 
         fetchAllPetEventTypes().then((data) => {
             const eventTypesList = data.map((eventType) => ({
@@ -49,42 +46,42 @@ const PetEventEditFormScreen = ({ route }) => {
             }));
             setEventTypes(eventTypesList);
         }).catch((error) => {
-            console.error('Ошибка при загрузке списка типов события:', error);
-        })
-    }, [])
+            console.error('Ошибка при загрузке типов событий:', error);
+        });
+    }, []);
 
     const handleDateChange = (event, selectedDate) => {
         setShowDatePicker(false);
         if (selectedDate) {
             setCurrentSelectedDate(selectedDate);
-            setFormattedDate(format(selectedDate, 'dd.MM.yyyy'));
+            setFormattedDate(format(selectedDate, 'dd.MM.yyyy HH:mm:ss'));
+        }
+    };
+
+    const handleTimeChange = (event, selectedTime) => {
+        setShowTimePicker(false);
+        if (selectedTime) {
+            const updatedDate = new Date(currentSelectedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes()));
+            setCurrentSelectedDate(updatedDate);
+            setFormattedDate(format(updatedDate, 'dd.MM.yyyy HH:mm:ss'));
         }
     };
 
     const handleFormSubmit = async (values) => {
-        console.log("values", values)
         try {
             const updatedPetEvent = {
                 ...values,
                 id: eventId,
                 pet: { id: values.pet },
                 type: { id: values.type },
-                date: format(currentSelectedDate, 'dd.MM.yyyy')
+                date: format(currentSelectedDate, 'dd.MM.yyyy HH:mm:ss'),
             };
-            console.log(updatedPetEvent)
             const response = await updatePetEvent(updatedPetEvent);
-            navigation.navigate('Event');
+            navigation.replace('EventView', { eventId: response });
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
     };
-
-    // const validationSchema = Yup.object().shape({
-    //     type: Yup.string().required('Тип события обязателен'),
-    //     pet: Yup.string().required('Питомец обязателен'),
-    //     description: Yup.string().required('Описание обязательно').max(255, 'Максимум 255 символов'),
-    //     date: Yup.date().required('Дата обязательна').nullable(),
-    // });
 
     if (!initialPetEvent || !pets || !eventTypes) {
         return (
@@ -95,7 +92,7 @@ const PetEventEditFormScreen = ({ route }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Formik
                 initialValues={{
                     type: initialPetEvent?.type.id || '',
@@ -137,16 +134,15 @@ const PetEventEditFormScreen = ({ route }) => {
                         />
                         {touched.description && errors.description && <Text style={styles.error}>{errors.description}</Text>}
 
-                        <Text style={styles.label}>Дата</Text>
+                        <Text style={styles.label}>Дата и время</Text>
                         <TouchableOpacity
                             onPress={() => setShowDatePicker(true)}
                             style={styles.dateInput}
                         >
                             <Text style={styles.dateInput}>
-                                {formattedDate || 'Выберите дату'}
+                                {formattedDate || 'Выберите дату и время'}
                             </Text>
                         </TouchableOpacity>
-                        {touched.date && errors.date && <Text style={styles.error}>{errors.date}</Text>}
 
                         {showDatePicker && (
                             <DateTimePicker
@@ -157,13 +153,26 @@ const PetEventEditFormScreen = ({ route }) => {
                             />
                         )}
 
-                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} >
+                        <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.selectTimeButton}>
+                            <Text style={styles.selectTimeButtonText}>Выбрать время</Text>
+                        </TouchableOpacity>
+
+                        {showTimePicker && (
+                            <DateTimePicker
+                                value={currentSelectedDate}
+                                mode="time"
+                                display="default"
+                                onChange={handleTimeChange}
+                            />
+                        )}
+
+                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                             <Text style={styles.submitButtonText}>Сохранить изменения</Text>
                         </TouchableOpacity>
                     </>
                 )}
             </Formik>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -208,6 +217,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red',
         marginBottom: 10,
+    },
+    selectTimeButton: {
+        backgroundColor: '#4CAF50',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 15,
+    },
+    selectTimeButtonText: {
+        color: '#fff',
     },
 });
 

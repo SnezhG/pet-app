@@ -9,7 +9,7 @@ const PetEventsByDayScreen = ({ route }) => {
 
     console.log(date)
     useEffect(() => {
-        fetchPetEventsByUserAndDate(1, date).then((data) => {
+        fetchPetEventsByUserAndDate(date).then((data) => {
             setEvents(data)
             setLoading(false)
         }).catch((error) => {

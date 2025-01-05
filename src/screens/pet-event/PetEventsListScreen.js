@@ -4,7 +4,6 @@ import { Calendar } from 'react-native-calendars';
 import { useNavigation } from '@react-navigation/native';
 import {fetchPetEventByUserOnWeek} from "../../queries/pet-event/petEventQueries";
 import {fetchPetEventsByUser} from "../../queries/pet-event/petEventQueries";
-import {fetchAllSpecies} from "../../queries/dictionary/dictionaryQueries";
 
 const PetEventsListScreen = () => {
     const [allEvents, setAllEvents] = useState([]);
@@ -15,14 +14,14 @@ const PetEventsListScreen = () => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        fetchPetEventsByUser(1).then((data) => {
+        fetchPetEventsByUser().then((data) => {
             setAllEvents(data);
             markDatesWithEvents(data);
         }).catch((error) => {
             console.error('Ошибка при загрузке событий:', error);
         });
 
-        fetchPetEventByUserOnWeek(1).then((data) => {
+        fetchPetEventByUserOnWeek().then((data) => {
             setWeekEvents(data);
         }).catch((error) => {
             console.error('Ошибка при загрузке событий:', error);
@@ -30,15 +29,20 @@ const PetEventsListScreen = () => {
     }, []);
 
     const convertDateToCalendarFormat = (date) => {
-        const [day, month, year] = date.split('.'); // Разбиваем строку на части
-        return `${year}-${month}-${day}`; // Собираем дату в формате YYYY-MM-DD
+        const [day, month, year, time] = date.split(/[\.,\s:]/);
+        return `${year}-${month}-${day}`;
     };
 
+    const convertCalendarToDateFormat = (date) => {
+        const [day, month, year] = date.split('-'); // Разбиваем строку на части
+        return `${year}.${month}.${day}`; // Собираем дату в формате YYYY-MM-DD
+    };
 
     const markDatesWithEvents = (events) => {
         const marked = {};
         events.forEach((event) => {
             const formattedDate = convertDateToCalendarFormat(event.date); // Преобразование формата
+            console.log("formattedDate", formattedDate)
             marked[formattedDate] = { marked: true, dotColor: 'blue' };
         });
         console.log(marked)
@@ -46,7 +50,9 @@ const PetEventsListScreen = () => {
     };
 
     const handleDayPress = (day) => {
-        setSelectedDay(day.dateString);
+        const date = convertCalendarToDateFormat(day.dateString)
+        console.log("date", date)
+        setSelectedDay(date);
         navigation.navigate('EventsByDay', { date: day.dateString });
     };
 

@@ -1,19 +1,27 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const baseUrl = 'http://192.168.1.106:8090/api/event';
-const byUserWeekUrlPart = '/by-user-week/';
-const byUserAllUrlPart = '/by-user-all/';
+const byUserWeekUrlPart = '/by-user-week';
+const byUserAllUrlPart = '/by-user-all';
 const byDateAndUserUrlPart = "/by-date/"
 const createUrlPart = "/create";
 const updateUrlPart = "/update";
+
+async function getToken() {
+    return await AsyncStorage.getItem('jwtToken');
+}
 
 export async function fetchPetEventById(id) {
 
     const url = baseUrl + "/" + id;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -29,15 +37,17 @@ export async function fetchPetEventById(id) {
     }
 }
 
-export async function fetchPetEventByUserOnWeek(id) {
+export async function fetchPetEventByUserOnWeek() {
 
-    const url = baseUrl + byUserWeekUrlPart + id;
+    const url = baseUrl + byUserWeekUrlPart;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -53,15 +63,17 @@ export async function fetchPetEventByUserOnWeek(id) {
     }
 }
 
-export async function fetchPetEventsByUser(id) {
+export async function fetchPetEventsByUser() {
 
-    const url = baseUrl + byUserAllUrlPart + id;
+    const url = baseUrl + byUserAllUrlPart;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -77,15 +89,17 @@ export async function fetchPetEventsByUser(id) {
     }
 }
 
-export async function fetchPetEventsByUserAndDate(id, date) {
+export async function fetchPetEventsByUserAndDate(date) {
 
-    const url = baseUrl + byDateAndUserUrlPart + id + "/" + date;
+    const url = baseUrl + byDateAndUserUrlPart + date;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -103,12 +117,14 @@ export async function fetchPetEventsByUserAndDate(id, date) {
 
 export async function createPetEvent(petEventDTO) {
     const url = baseUrl + createUrlPart;
-    console.log("petEventDTO", petEventDTO)
+    console.log("petEventDTO", petEventDTO.date)
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
             body: JSON.stringify(petEventDTO),
         });
@@ -128,10 +144,12 @@ export async function updatePetEvent(petEventDTO) {
     const url = baseUrl + updateUrlPart;
     console.log("petEventDTO", petEventDTO)
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
             body: JSON.stringify(petEventDTO),
         });
@@ -152,10 +170,12 @@ export async function deletePetEvent(id) {
     const url = baseUrl + "/" + id;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
