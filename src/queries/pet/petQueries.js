@@ -1,17 +1,23 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {getToken} from "../../auth/auth";
+
 const baseUrl = 'http://192.168.1.106:8090/api/pet';
-const byUserUrlPart = '/by-user/'
+const byUserUrlPart = '/by-user'
 const updateUrlPart = '/update';
 const createUrlPart = '/create';
 
-export async function fetchPetsByUserId(userId) {
+export async function fetchPetsByUserId() {
 
-    const url = baseUrl + byUserUrlPart + userId;
+    const url = baseUrl + byUserUrlPart;
 
     try {
+        const token = await getToken();
+        console.log("token", token)
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -22,7 +28,7 @@ export async function fetchPetsByUserId(userId) {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Ошибка при запросе питомцев пользователя ${userId}:`, error);
+        console.error(`Ошибка при запросе питомцев пользователя:`, error);
         throw error;
     }
 }
@@ -31,10 +37,12 @@ export async function fetchPetById(id) {
     const url = baseUrl + "/" + id;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
@@ -53,12 +61,13 @@ export async function fetchPetById(id) {
 
 export async function updatePet(petDTO) {
     const url = baseUrl + updateUrlPart;
-    console.log("petDTO", petDTO)
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
             body: JSON.stringify(petDTO),
         });
@@ -76,12 +85,13 @@ export async function updatePet(petDTO) {
 
 export async function createPet(petDTO) {
     const url = baseUrl + createUrlPart;
-    console.log("petDTO", petDTO)
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
             body: JSON.stringify(petDTO),
         });
@@ -102,10 +112,12 @@ export async function deletePet(id) {
     const url = baseUrl + id;
 
     try {
+        const token = await getToken();
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer: ${token}`,
             },
         });
 
