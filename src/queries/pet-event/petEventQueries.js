@@ -113,9 +113,8 @@ export async function fetchPetEventsByUserAndDate(date) {
 }
 
 export async function createPetEvent(petEventDTO) {
-    console.log("petEventDTO", petEventDTO)
     const url = baseUrl + petEventUrlPart + createUrlPart;
-    console.log("petEventDTO", petEventDTO.date)
+
     try {
         const token = await getToken();
         const response = await fetch(url, {
@@ -140,7 +139,6 @@ export async function createPetEvent(petEventDTO) {
 
 export async function updatePetEvent(petEventDTO) {
     const url = baseUrl + petEventUrlPart + updateUrlPart;
-    console.log("petEventDTO", petEventDTO)
     try {
         const token = await getToken();
         const response = await fetch(url, {

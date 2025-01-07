@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { createPetEvent } from '../../queries/pet-event/petEventQueries';
 import * as Notifications from 'expo-notifications';
 import {registerForPushNotificationsAsync} from "../../utils/notifUtils";
+import {petEventValidationScheme} from "../../model/petEventModel";
 
 const PetEventCreateScreen = ({ navigation }) => {
     const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
@@ -50,7 +51,6 @@ const PetEventCreateScreen = ({ navigation }) => {
         registerForPushNotificationsAsync().then((token) => {
             if (token) {
                 setUserToken(token);
-                console.log('Expo Push Token:', token);
             }
         });
     }, []);
@@ -101,12 +101,6 @@ const PetEventCreateScreen = ({ navigation }) => {
         description: '',
     };
 
-    const validationSchema = Yup.object().shape({
-        type: Yup.string().required('Тип события обязателен'),
-        pet: Yup.string().required('Питомец обязателен'),
-        description: Yup.string().required('Описание обязательно'),
-    });
-
     return (
         <ImageBackground
             source={require('../../../assets/background.png')}
@@ -116,6 +110,7 @@ const PetEventCreateScreen = ({ navigation }) => {
                 <Formik
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
+                    validationSchema={petEventValidationScheme}
                 >
                     {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
                         <>

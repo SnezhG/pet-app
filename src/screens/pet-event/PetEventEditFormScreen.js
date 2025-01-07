@@ -8,6 +8,7 @@ import { fetchPetsByUserId } from "../../queries/pet/petQueries";
 import { format, parse } from "date-fns";
 import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries";
 import {registerForPushNotificationsAsync} from "../../utils/notifUtils";
+import {petEventValidationScheme} from "../../model/petEventModel";
 
 const PetEventEditFormScreen = ({ route, navigation }) => {
     const { eventId } = route.params;
@@ -55,7 +56,6 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
         registerForPushNotificationsAsync().then((token) => {
             if (token) {
                 setUserToken(token);
-                console.log('Expo Push Token:', token);
             }
         });
     }, []);
@@ -101,7 +101,7 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
             </View>
         );
     }
-    console.log("initialPetEvent", initialPetEvent)
+
     return (
         <ImageBackground
             source={require('../../../assets/background.png')}
@@ -117,6 +117,7 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
                     isNotifEnabled: initialPetEvent?.isNotifEnabled,
                 }}
                 onSubmit={handleFormSubmit}
+                validationSchema={petEventValidationScheme}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
                     <>

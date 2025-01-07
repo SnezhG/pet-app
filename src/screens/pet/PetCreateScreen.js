@@ -7,7 +7,7 @@ import {
     ScrollView,
     ActivityIndicator,
     Image,
-    View,
+    View, ImageBackground,
 } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -138,6 +138,10 @@ function PetCreateScreen({ navigation }) {
     });
 
     return (
+        <ImageBackground
+            source={require('../../../assets/background.png')}
+            style={styles.backgroundImage}
+        >
         <ScrollView contentContainerStyle={styles.container}>
             <Formik
                 initialValues={{
@@ -265,13 +269,17 @@ function PetCreateScreen({ navigation }) {
                 )}
             </Formik>
         </ScrollView>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        backgroundColor: '#fff',
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
     },
     label: {
         fontSize: 16,

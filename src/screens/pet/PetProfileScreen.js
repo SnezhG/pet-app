@@ -61,7 +61,6 @@ export default function PetProfileScreen({ route }) {
     }
 
     return (
-        // Используем ImageBackground с фоновым изображением
         <ImageBackground source={require('../../../assets/background.png')} style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {!isEditing ? (
@@ -119,12 +118,10 @@ export default function PetProfileScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     scrollContainer: {
         padding: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)', // Полупрозрачный фон для контента
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
     },
     image: {
         width: 200,

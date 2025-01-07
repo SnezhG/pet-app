@@ -49,7 +49,7 @@ const PetEventViewScreen = ({ route }) => {
     const handleEditEvent = () => {
         navigation.navigate('EventEdit', { eventId });
     };
-    console.log("eventDetails", eventDetails)
+
     return (
         <ImageBackground
             source={require('../../../assets/background.png')} // Укажите путь к вашему фоновому изображению

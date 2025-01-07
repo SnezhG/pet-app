@@ -12,7 +12,6 @@ export async function fetchPetsByUserId() {
 
     try {
         const token = await getToken();
-        console.log("token", token)
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -51,7 +50,6 @@ export async function fetchPetById(id) {
         }
 
         const data = await response.json();
-        console.log(data)
         return data;
     } catch (error) {
         console.error(`Ошибка при запросе питомца с id ${id}:`, error);

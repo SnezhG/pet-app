@@ -143,7 +143,6 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
                 birthDate: format(birthDate, 'dd.MM.yyyy'),
                 photo: photo ? photo : null
             };
-            console.log(updatedPet.sex)
             const response = await updatePet(updatedPet);
             onSave(); // Обновление данных в родительском компоненте
         } catch (error) {
@@ -173,9 +172,9 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
         <Formik
             initialValues={{
                 name: initialPet.name,
-                species: initialPet.species?.id || null, // Используем только `id`
-                breed: initialPet.breed?.id || null,    // Используем только `id`
-                sex: initialPet.sex?.id || null,    // Используем только `id`
+                species: initialPet.species?.id || null,
+                breed: initialPet.breed?.id || null,
+                sex: initialPet.sex?.id || null,
                 weight: initialPet.weight,
                 health: initialPet.health,
             }}

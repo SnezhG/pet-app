@@ -16,7 +16,7 @@ export async function authenticationRequest(authenticationRequest) {
             },
             body: JSON.stringify(authenticationRequest),
         });
-        console.log("response", response)
+
         if (!response.ok) {
             throw new Error(`Ошибка сервера: ${response.status}`);
         }
