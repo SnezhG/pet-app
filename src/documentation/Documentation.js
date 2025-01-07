@@ -10,11 +10,13 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
+import {useNavigation} from "@react-navigation/native";
 
-const Documentation = ({navigation, route}) => {
+const Documentation = ({route}) => {
     const [markdownContent, setMarkdownContent] = useState('');
     const fileUrl = route.params.fileUrl;
     const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
 
     const loadMarkdown = useCallback(async url => {
         setLoading(true);
@@ -112,7 +114,7 @@ const Documentation = ({navigation, route}) => {
                 </ScrollView>
                 <TouchableOpacity
                     style={styles.transparentButton}
-                    onPress={() => navigation.navigate('Home')}>
+                    onPress={() => navigation.replace('MainTabs')}>
                     <Text style={styles.buttonText}>Вернуться в дом</Text>
                 </TouchableOpacity>
             </ScrollView>

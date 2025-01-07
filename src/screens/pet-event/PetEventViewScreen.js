@@ -47,7 +47,7 @@ const PetEventViewScreen = ({ route }) => {
     }
 
     const handleEditEvent = () => {
-        navigation.navigate('EventEdit', { eventId });
+        navigation.replace('EventEdit', { eventId });
     };
 
     return (
