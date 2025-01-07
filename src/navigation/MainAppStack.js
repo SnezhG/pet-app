@@ -17,7 +17,17 @@ const Stack = createNativeStackNavigator();
 
 const MainAppStack = () => {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: true }}>
+        <Stack.Navigator screenOptions={{
+            headerStyle: {
+                backgroundColor: '#9DC384',
+            },
+            headerTitleStyle: {
+                color: '#fff',
+                fontSize: 20,
+                fontWeight: 'bold',
+            },
+            headerTitle: 'Дневник питомца',
+        }}>
             <Stack.Screen name="MainTabs" component={TabNavigator} />
             <Stack.Screen name="PetProfile" component={PetProfileScreen} />
             <Stack.Screen name="PetCreate" component={PetCreateScreen} />

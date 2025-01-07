@@ -1,6 +1,7 @@
 import {getToken} from "../../auth/auth";
+import {baseUrl} from "../../utils/constant";
 
-const baseUrl = 'http://192.168.1.106:8090/api/event';
+const petEventUrlPart = '/event';
 const byUserWeekUrlPart = '/by-user-week';
 const byUserAllUrlPart = '/by-user-all';
 const byDateAndUserUrlPart = "/by-date/"
@@ -9,7 +10,7 @@ const updateUrlPart = "/update";
 
 export async function fetchPetEventById(id) {
 
-    const url = baseUrl + "/" + id;
+    const url = baseUrl + petEventUrlPart + "/" + id;
 
     try {
         const token = await getToken();
@@ -35,7 +36,7 @@ export async function fetchPetEventById(id) {
 
 export async function fetchPetEventByUserOnWeek() {
 
-    const url = baseUrl + byUserWeekUrlPart;
+    const url = baseUrl + petEventUrlPart + byUserWeekUrlPart;
 
     try {
         const token = await getToken();
@@ -61,7 +62,7 @@ export async function fetchPetEventByUserOnWeek() {
 
 export async function fetchPetEventsByUser() {
 
-    const url = baseUrl + byUserAllUrlPart;
+    const url = baseUrl + petEventUrlPart + byUserAllUrlPart;
 
     try {
         const token = await getToken();
@@ -87,7 +88,7 @@ export async function fetchPetEventsByUser() {
 
 export async function fetchPetEventsByUserAndDate(date) {
 
-    const url = baseUrl + byDateAndUserUrlPart + date;
+    const url = baseUrl + petEventUrlPart + byDateAndUserUrlPart + date;
 
     try {
         const token = await getToken();
@@ -112,7 +113,8 @@ export async function fetchPetEventsByUserAndDate(date) {
 }
 
 export async function createPetEvent(petEventDTO) {
-    const url = baseUrl + createUrlPart;
+    console.log("petEventDTO", petEventDTO)
+    const url = baseUrl + petEventUrlPart + createUrlPart;
     console.log("petEventDTO", petEventDTO.date)
     try {
         const token = await getToken();
@@ -137,7 +139,7 @@ export async function createPetEvent(petEventDTO) {
 }
 
 export async function updatePetEvent(petEventDTO) {
-    const url = baseUrl + updateUrlPart;
+    const url = baseUrl + petEventUrlPart + updateUrlPart;
     console.log("petEventDTO", petEventDTO)
     try {
         const token = await getToken();
@@ -163,7 +165,7 @@ export async function updatePetEvent(petEventDTO) {
 
 export async function deletePetEvent(id) {
 
-    const url = baseUrl + "/" + id;
+    const url = baseUrl + petEventUrlPart + "/" + id;
 
     try {
         const token = await getToken();

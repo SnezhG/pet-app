@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, Image, ImageBackground } from 'react-native';
 import PetEditFormScreen from "./PetEditFormScreen";
 import { fetchPetById } from "../../queries/pet/petQueries";
 
@@ -61,62 +61,70 @@ export default function PetProfileScreen({ route }) {
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {!isEditing ? (
-                <View>
-                    {pet.image ? (
-                        <Image source={{ uri: pet.image }} style={styles.image} />
-                    ) : (
-                        <View style={[styles.image, styles.placeholder]}>
-                            <Text style={styles.placeholderText}>Фото отсутствует</Text>
-                        </View>
-                    )}
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Кличка: </Text>
-                        {pet.name}
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Вид: </Text>
-                        {pet.species?.name}
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Порода: </Text>
-                        {pet.breed?.name}
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Пол: </Text>
-                        {pet.sex?.name}
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Дата рождения: </Text>
-                        {pet.birthDate}
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Вес: </Text>
-                        {pet.weight} кг
-                    </Text>
-                    <Text style={styles.profileField}>
-                        <Text style={styles.label}>Примечания по здоровью: </Text>
-                        {pet.health || 'Нет'}
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => setIsEditing(true)}
-                    >
-                        <Text style={styles.editButtonText}>Редактировать</Text>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <PetEditFormScreen initialPet={pet} onSave={handleSave} />
-            )}
-        </ScrollView>
+        // Используем ImageBackground с фоновым изображением
+        <ImageBackground source={require('../../../assets/background.png')} style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                {!isEditing ? (
+                    <View>
+                        {pet.image ? (
+                            <Image source={{ uri: pet.image }} style={styles.image} />
+                        ) : (
+                            <View style={[styles.image, styles.placeholder]}>
+                                <Text style={styles.placeholderText}>Фото отсутствует</Text>
+                            </View>
+                        )}
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Кличка: </Text>
+                            {pet.name}
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Вид: </Text>
+                            {pet.species?.name}
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Порода: </Text>
+                            {pet.breed?.name}
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Пол: </Text>
+                            {pet.sex?.name}
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Дата рождения: </Text>
+                            {pet.birthDate}
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Вес: </Text>
+                            {pet.weight} кг
+                        </Text>
+                        <Text style={styles.profileField}>
+                            <Text style={styles.label}>Примечания по здоровью: </Text>
+                            {pet.health || 'Нет'}
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.editButton}
+                            onPress={() => setIsEditing(true)}
+                        >
+                            <Text style={styles.editButtonText}>Редактировать</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <PetEditFormScreen initialPet={pet} onSave={handleSave} />
+                )}
+            </ScrollView>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    scrollContainer: {
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255, 255, 255, 0.7)', // Полупрозрачный фон для контента
     },
     image: {
         width: 200,
@@ -157,7 +165,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     editButton: {
-        backgroundColor: '#FFA500',
+        backgroundColor: '#78A75A', // Новый цвет кнопки
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

@@ -7,6 +7,7 @@ import {
     ScrollView,
     ActivityIndicator,
     Image,
+    View,
 } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -118,9 +119,8 @@ function PetCreateScreen({ navigation }) {
                 photo: photo ? photo.base64 : null,
                 user: { id: "1" },
             };
-
             const response = await createPet(newPet);
-            navigation.navigate('PetProfile', { petId: response });
+            navigation.replace('PetProfile', { petId: response });
         } catch (error) {
             console.error('Ошибка при сохранении данных питомца:', error);
         }
@@ -144,6 +144,7 @@ function PetCreateScreen({ navigation }) {
                     name: '',
                     species: '',
                     breed: '',
+                    sex: '',
                     weight: '',
                     health: '',
                 }}
@@ -164,7 +165,7 @@ function PetCreateScreen({ navigation }) {
 
                         <Text style={styles.label}>Вид</Text>
                         {isLoadingSpecies ? (
-                            <ActivityIndicator size="small" color="#4CAF50" />
+                            <ActivityIndicator size="small" color="#fff" />
                         ) : (
                             <RNPickerSelect
                                 onValueChange={(value) => {
@@ -180,7 +181,7 @@ function PetCreateScreen({ navigation }) {
 
                         <Text style={styles.label}>Пол</Text>
                         {isLoadingSexes ? (
-                            <ActivityIndicator size="small" color="#4CAF50" />
+                            <ActivityIndicator size="small" color="#fff" />
                         ) : (
                             <RNPickerSelect
                                 onValueChange={(value) => {
@@ -195,7 +196,7 @@ function PetCreateScreen({ navigation }) {
 
                         <Text style={styles.label}>Порода</Text>
                         {isLoadingBreeds ? (
-                            <ActivityIndicator size="small" color="#4CAF50" />
+                            <ActivityIndicator size="small" color="#fff" />
                         ) : (
                             <RNPickerSelect
                                 onValueChange={(value) => setFieldValue('breed', value)}
@@ -267,8 +268,6 @@ function PetCreateScreen({ navigation }) {
     );
 }
 
-export default PetCreateScreen;
-
 const styles = StyleSheet.create({
     container: {
         padding: 20,
@@ -297,7 +296,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     submitButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#78A75A',
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -312,7 +311,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     photoButton: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#78A75A',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
@@ -348,3 +347,5 @@ const pickerSelectStyles = {
         color: '#333',
     },
 };
+
+export default PetCreateScreen;

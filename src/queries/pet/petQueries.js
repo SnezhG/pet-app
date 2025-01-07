@@ -1,14 +1,14 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {baseUrl} from "../../utils/constant";
 import {getToken} from "../../auth/auth";
 
-const baseUrl = 'http://192.168.1.106:8090/api/pet';
+const petUrlPart = '/pet'
 const byUserUrlPart = '/by-user'
 const updateUrlPart = '/update';
 const createUrlPart = '/create';
 
 export async function fetchPetsByUserId() {
 
-    const url = baseUrl + byUserUrlPart;
+    const url = baseUrl + petUrlPart + byUserUrlPart;
 
     try {
         const token = await getToken();
@@ -34,7 +34,7 @@ export async function fetchPetsByUserId() {
 }
 
 export async function fetchPetById(id) {
-    const url = baseUrl + "/" + id;
+    const url = baseUrl + petUrlPart + "/" + id;
 
     try {
         const token = await getToken();
@@ -60,7 +60,7 @@ export async function fetchPetById(id) {
 }
 
 export async function updatePet(petDTO) {
-    const url = baseUrl + updateUrlPart;
+    const url = baseUrl + petUrlPart + updateUrlPart;
     try {
         const token = await getToken();
         const response = await fetch(url, {
@@ -84,7 +84,7 @@ export async function updatePet(petDTO) {
 }
 
 export async function createPet(petDTO) {
-    const url = baseUrl + createUrlPart;
+    const url = baseUrl + petUrlPart + createUrlPart;
     try {
         const token = await getToken();
         const response = await fetch(url, {
@@ -109,7 +109,7 @@ export async function createPet(petDTO) {
 
 export async function deletePet(id) {
 
-    const url = baseUrl + id;
+    const url = baseUrl + petUrlPart + id;
 
     try {
         const token = await getToken();

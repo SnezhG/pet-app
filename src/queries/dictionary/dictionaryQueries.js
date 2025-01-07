@@ -1,13 +1,14 @@
 import {getToken} from "../../auth/auth";
+import {baseUrl} from "../../utils/constant";
 
-const baseUrl = 'http://192.168.1.106:8090/api/dictionary';
+const dictionaryUrlPart = '/dictionary';
 const allSpeciesUrlPart = '/all-species'
 const allBreedsBySpeciesUrlPart = "/all-breeds-by-species/";
 const allPetEventTypesUrlPart = '/all-event-types';
 const allSexesUrlPart = '/all-sexes';
 
 export async function fetchAllSpecies() {
-    const url = baseUrl + allSpeciesUrlPart;
+    const url = baseUrl + dictionaryUrlPart + allSpeciesUrlPart;
 
     try {
         const token = await getToken();
@@ -32,7 +33,7 @@ export async function fetchAllSpecies() {
 }
 
 export async function fetchAllBreedsBySpecies(speciesId) {
-    const url = baseUrl + allBreedsBySpeciesUrlPart + speciesId;
+    const url = baseUrl + dictionaryUrlPart + allBreedsBySpeciesUrlPart + speciesId;
 
     try {
         const token = await getToken();
@@ -57,7 +58,7 @@ export async function fetchAllBreedsBySpecies(speciesId) {
 }
 
 export async function fetchAllPetEventTypes() {
-    const url = baseUrl + allPetEventTypesUrlPart;
+    const url = baseUrl + dictionaryUrlPart + allPetEventTypesUrlPart;
 
     try {
         const token = await getToken();
@@ -82,7 +83,7 @@ export async function fetchAllPetEventTypes() {
 }
 
 export async function fetchAllSexes() {
-    const url = baseUrl + allSexesUrlPart;
+    const url = baseUrl + dictionaryUrlPart + allSexesUrlPart;
 
     try {
         const token = await getToken();

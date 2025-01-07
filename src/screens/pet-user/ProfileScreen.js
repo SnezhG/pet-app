@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import {AuthContext} from "../../auth/AuthContext";
-import {useNavigation} from "@react-navigation/native";
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { AuthContext } from "../../auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import {getEmail} from "../../auth/auth";
 
 export default function ProfileScreen() {
     const { logout } = useContext(AuthContext);
@@ -13,19 +14,33 @@ export default function ProfileScreen() {
     };
 
     const handleAbout = () => {
-        navigation.navigate('Documentation'); // Переход на экран документации
+        navigation.navigate('Documentation');
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Профиль</Text>
-            <Button title="О приложении" onPress={handleAbout} />
-            <Button title="Выйти из профиля" onPress={handleLogout} style={styles.logoutButton} />
-        </View>
+        <ImageBackground
+            source={require('../../../assets/background.png')}
+            style={styles.background}
+        >
+            <View style={styles.container}>
+                <Text style={styles.title}>Профиль</Text>
+                <Text style={styles.userEmail}>{getEmail()}</Text>
+                <TouchableOpacity style={styles.button} onPress={handleAbout}>
+                    <Text style={styles.buttonText}>О приложении</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={handleLogout}>
+                    <Text style={styles.buttonText}>Выйти из профиля</Text>
+                </TouchableOpacity>
+            </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -35,9 +50,27 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
+        color: '#000000',
+        marginBottom: 30,
     },
-    logoutButton: {
-        marginTop: 20,
+    userEmail: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#000000',
+        marginBottom: 10,
+    },
+    button: {
+        backgroundColor: '#78A75A',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 5,
+        marginVertical: 10,
+        width: '80%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

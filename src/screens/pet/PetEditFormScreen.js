@@ -143,6 +143,7 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
                 birthDate: format(birthDate, 'dd.MM.yyyy'),
                 photo: photo ? photo : null
             };
+            console.log(updatedPet.sex)
             const response = await updatePet(updatedPet);
             onSave(); // Обновление данных в родительском компоненте
         } catch (error) {
@@ -174,6 +175,7 @@ export default function PetEditFormScreen({ initialPet, onSave }) {
                 name: initialPet.name,
                 species: initialPet.species?.id || null, // Используем только `id`
                 breed: initialPet.breed?.id || null,    // Используем только `id`
+                sex: initialPet.sex?.id || null,    // Используем только `id`
                 weight: initialPet.weight,
                 health: initialPet.health,
             }}
@@ -330,7 +332,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     submitButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#78A75A',
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -340,7 +342,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     editButton: {
-        backgroundColor: '#FFA500',
+        backgroundColor: '#78A75A',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',
@@ -367,7 +369,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     photoButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#78A75A',
         padding: 10,
         borderRadius: 5,
         alignItems: 'center',

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView, ImageBackground} from 'react-native';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { fetchPetEventById, updatePetEvent } from "../../queries/pet-event/petEventQueries";
 import { fetchPetsByUserId } from "../../queries/pet/petQueries";
 import { format, parse } from "date-fns";
-import { useNavigation } from "@react-navigation/native";
 import {fetchAllPetEventTypes} from "../../queries/dictionary/dictionaryQueries";
+import {registerForPushNotificationsAsync} from "../../utils/notifUtils";
 
 const PetEventEditFormScreen = ({ route, navigation }) => {
     const { eventId } = route.params;
@@ -17,6 +17,8 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
+    const [userToken, setUserToken] = useState('');
+    const [isNotifEnabled, setIsNotifEnabled] = useState(false);
     const [formattedDate, setFormattedDate] = useState('');
 
     useEffect(() => {
@@ -25,6 +27,7 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
             const parsedDate = data.date ? parse(data.date, 'dd.MM.yyyy HH:mm:ss', new Date()) : new Date();
             setCurrentSelectedDate(parsedDate);
             setFormattedDate(data.date ? format(parsedDate, 'dd.MM.yyyy HH:mm:ss') : '');
+            setIsNotifEnabled(data.isNotifEnabled);
         }).catch((error) => {
             console.error('Ошибка при загрузке данных события:', error);
         });
@@ -47,6 +50,13 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
             setEventTypes(eventTypesList);
         }).catch((error) => {
             console.error('Ошибка при загрузке типов событий:', error);
+        });
+
+        registerForPushNotificationsAsync().then((token) => {
+            if (token) {
+                setUserToken(token);
+                console.log('Expo Push Token:', token);
+            }
         });
     }, []);
 
@@ -75,6 +85,7 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
                 pet: { id: values.pet },
                 type: { id: values.type },
                 date: format(currentSelectedDate, 'dd.MM.yyyy HH:mm:ss'),
+                isNotifEnabled: isNotifEnabled,
             };
             const response = await updatePetEvent(updatedPetEvent);
             navigation.replace('EventView', { eventId: response });
@@ -90,14 +101,20 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
             </View>
         );
     }
-
+    console.log("initialPetEvent", initialPetEvent)
     return (
+        <ImageBackground
+            source={require('../../../assets/background.png')}
+            style={styles.backgroundImage}
+        >
         <ScrollView style={styles.container}>
             <Formik
                 initialValues={{
                     type: initialPetEvent?.type.id || '',
                     pet: initialPetEvent?.pet.id || '',
                     description: initialPetEvent?.description || '',
+                    userToken: userToken,
+                    isNotifEnabled: initialPetEvent?.isNotifEnabled,
                 }}
                 onSubmit={handleFormSubmit}
             >
@@ -166,6 +183,15 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
                             />
                         )}
 
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Включить уведомления</Text>
+                            <Switch
+                                value={isNotifEnabled}
+                                onValueChange={(value) => setIsNotifEnabled(value)}
+                                style={styles.switch}
+                            />
+                        </View>
+
                         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                             <Text style={styles.submitButtonText}>Сохранить изменения</Text>
                         </TouchableOpacity>
@@ -173,17 +199,24 @@ const PetEventEditFormScreen = ({ route, navigation }) => {
                 )}
             </Formik>
         </ScrollView>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
     },
     label: {
         fontSize: 16,
+        fontWeight: 'bold',
         marginBottom: 5,
+        color: '#000000',
     },
     input: {
         borderWidth: 1,
@@ -191,6 +224,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
+        backgroundColor: '#fff',
     },
     textArea: {
         height: 100,
@@ -201,10 +235,33 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
+        backgroundColor: '#fff',
         textAlign: 'center',
     },
+    dateInputText: {
+        color: '#333',
+    },
+    selectTimeButton: {
+        backgroundColor: '#78A75A',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 15,
+    },
+    selectTimeButtonText: {
+        color: '#fff',
+    },
+    switchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        marginBottom: 20,
+    },
+    switch: {
+        color: '#78A75A'
+    },
     submitButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#78A75A',
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -217,16 +274,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'red',
         marginBottom: 10,
-    },
-    selectTimeButton: {
-        backgroundColor: '#4CAF50',
-        padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 15,
-    },
-    selectTimeButtonText: {
-        color: '#fff',
     },
 });
 
@@ -245,6 +292,7 @@ const pickerSelectStyles = {
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
+        backgroundColor: '#fff',
         color: '#333',
     },
 };

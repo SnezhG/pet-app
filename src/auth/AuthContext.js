@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { getToken, saveToken, removeToken } from './auth';
+import {getToken, saveToken, removeToken, saveEmail, removeEmail} from './auth';
 
 export const AuthContext = createContext();
 
@@ -16,13 +16,15 @@ export const AuthProvider = ({ children }) => {
         checkAuthStatus();
     }, []);
 
-    const login = async (token) => {
+    const login = async (token, email) => {
         await saveToken(token);
+        await saveEmail(email);
         setIsAuthenticated(true);
     };
 
     const logout = async () => {
         await removeToken();
+        await removeEmail();
         setIsAuthenticated(false);
     };
 

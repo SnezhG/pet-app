@@ -1,10 +1,12 @@
-const baseUrl = 'http://192.168.1.106:8090/api/auth';
+import {baseUrl} from "../../utils/constant";
+
+const authUrlPart = '/auth';
 const authenticationUrlPart = '/authenticate'
 const registerUrlPart = '/register';
 
 export async function authenticationRequest(authenticationRequest) {
-    console.log("authenticationRequest", authenticationRequest)
-    const url = baseUrl + authenticationUrlPart;
+
+    const url = baseUrl + authUrlPart + authenticationUrlPart;
 
     try {
         const response = await fetch(url, {
@@ -29,7 +31,7 @@ export async function authenticationRequest(authenticationRequest) {
 
 export async function registerRequest(registerRequest) {
 
-    const url = baseUrl + registerUrlPart;
+    const url = baseUrl + authUrlPart + registerUrlPart;
 
     try {
         const response = await fetch(url, {

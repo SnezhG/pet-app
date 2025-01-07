@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, FlatList, Text, View, TouchableOpacity, Image } from 'react-native';
+import {StyleSheet, FlatList, Text, View, TouchableOpacity, Image, ImageBackground} from 'react-native';
 import { fetchPetsByUserId } from "../queries/pet/petQueries";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -8,9 +8,7 @@ export default function HomeScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            const userId = '1';
-
-            fetchPetsByUserId(userId)
+            fetchPetsByUserId()
                 .then((data) => {
                     const updatedPets = data.map(pet => ({
                         ...pet,
@@ -52,16 +50,16 @@ export default function HomeScreen({ navigation }) {
     );
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../../assets/background.png')} style={styles.container}>
             <FlatList
                 data={[...pets, { id: 'add', name: '', image: '' }]}
                 renderItem={({ item }) => (item.id === 'add' ? addNewPetButton() : renderItem({ item }))}
                 keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.carousel}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.grid}
             />
-        </View>
+        </ImageBackground>
     );
 }
 
@@ -69,16 +67,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
     },
-    carousel: {
-        paddingHorizontal: 10,
+    grid: {
+        padding: 10,
     },
     card: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: 10,
-        width: 150,
+        margin: 10,
         height: 200,
         borderRadius: 10,
         backgroundColor: '#f9f9f9',
@@ -109,7 +107,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     addButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#78A75A',
         alignItems: 'center',
         justifyContent: 'center',
     },
